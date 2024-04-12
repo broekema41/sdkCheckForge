@@ -10,6 +10,7 @@ activityCompose = "1.7.0"
 composeBom = "2023.08.00"
 forgerockAuth = "4.4.0"
 openidAppauth = "0.11.1"
+parcelize = "1.9.0"
 
 [libraries]
 net-openid-appauth = { group = "net.openid", name = "appauth", version.ref = "openidAppauth" }
@@ -32,4 +33,5 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinxParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "parcelize" }
 
