@@ -5,9 +5,11 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
+import net.openid.appauth.AuthorizationRequest
 import org.forgerock.android.auth.FRAuth
+import org.forgerock.android.auth.FRListener
 import org.forgerock.android.auth.FRUser
 import org.forgerock.android.auth.Logger
 import org.forgerock.android.auth.Node
@@ -32,15 +34,15 @@ class MainActivity : AppCompatActivity(), NodeListener<FRUser> {
         logoutButton = findViewById(R.id.buttonLogout)
         updateStatus()
 
-
         // Attach `FRUser.login()` to `loginButton`
         loginButton?.setOnClickListener(View.OnClickListener { view: View? ->
             Log.d(TAG, "loginButton:clicked")
             Log.d(TAG, getString(R.string.forgerock_url))
-            FRUser.login(
-                applicationContext,
-                this
-            )
+            centralizedLogin();
+//            FRUser.login(
+//                applicationContext,
+//                this
+//            )
         })
 
          // Attach `FRUser.getCurrentUser().logout()` to `logoutButton`
@@ -52,6 +54,23 @@ class MainActivity : AppCompatActivity(), NodeListener<FRUser> {
 
     }
 
+    private fun centralizedLogin() {
+        FRUser.browser().appAuthConfigurer()
+            .authorizationRequest { r: AuthorizationRequest.Builder ->
+               r.setPrompt("Login")
+            }.customTabsIntent { t: CustomTabsIntent.Builder ->
+            }.done().login(this, object : FRListener<FRUser?> {
+                override fun onSuccess(result: FRUser?) {
+                    Logger.debug("MAIN", result?.accessToken?.value)
+                    updateStatus()
+                }
+
+                override fun onException(e: java.lang.Exception) {
+                    Logger.error("MAIN", e.message)
+                    updateStatus()
+                }
+            })
+    }
 
     private fun updateStatus() {
         val that = this;
